@@ -4,25 +4,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>თამუნა მამუკელაშვილის ფარდები | თელავი</title>
-    <!-- Tailwind CSS CDN მობილურიდან სწრაფი და ლამაზი დიზაინისთვის -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Noto Sans Georgian', sans-serif;
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans Georgian', sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; line-height: 1.6; }
+        header { background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { font-size: 18px; font-weight: 700; color: #581c87; }
+        .logo span { color: #d97706; display: block; font-size: 14px; }
+        .call-btn { background-color: #581c87; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; }
+        
+        .hero { background: linear-gradient(rgba(88, 28, 135, 0.9), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80') center/cover; color: white; text-align: center; padding: 60px 20px; }
+        .hero h1 { font-size: 26px; margin-bottom: 15px; }
+        .hero p { font-size: 15px; margin-bottom: 25px; color: #e9d5ff; }
+        
+        .calculator { max-width: 500px; margin: -30px auto 40px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
+        .calculator h2 { font-size: 20px; color: #581c87; margin-bottom: 5px; text-align: center; }
+        .calculator p.subtitle { font-size: 13px; color: #64748b; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #334155; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 15px 0; font-size: 13px; font-weight: 600; }
+        .calc-btn { width: 100%; background-color: #581c87; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .result-box { margin-top: 20px; background: #f3e8ff; padding: 15px; border-radius: 8px; text-align: center; display: none; }
+        .result-box h3 { color: #581c87; font-size: 24px; margin-top: 5px; }
+        
+        .section { padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
+        .section h2 { text-align: center; font-size: 22px; color: #581c87; margin-bottom: 25px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-content { padding: 15px; }
+        .card-content h3 { font-size: 16px; margin-bottom: 5px; }
+        .card-content p { font-size: 13px; color: #64748b; }
+        
+        .contact { background: #581c87; color: white; text-align: center; padding: 40px 20px; }
+        .contact h2 { font-size: 22px; margin-bottom: 10px; }
+        .contact p { font-size: 14px; color: #e9d5ff; margin-bottom: 20px; }
+        .phone-link { display: inline-block; background: #d97706; color: white; padding: 12px 25px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; }
+        
+        footer { background: #0f172a; color: #94a3b8; text-align: center; padding: 20px; font-size: 12px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body>
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg text-purple-800 tracking-tight">
-                თამუნა მამუკელაშვილი <span class="text-amber-600 block sm:inline">ფარდები თელავი</span>
+    <header>
+        <div class="logo">
+            თამუნა მამუკელაშვილი
+            <span>ფარდები თელავი</span>
+        </div>
+        <a href="tel:+995500000000" class="call-btn">📞 დარეკვა</a>
+    </header>
+
+    <section class="hero">
+        <h1>შექმენით სიმყუდროვე თამუნა მამუკელაშვილთან ერთად</h1>
+        <p>ინდივიდუალური მიდგომა, უმაღლესი ხარისხის ქსოვილები და პროფესიონალური შეკერვა თელავში.</p>
+    </section>
+
+    <div class="calculator">
+        <h2>ფარდის სავარაუდო კალკულატორი</h2>
+        <p class="subtitle">შეიყვანეთ ზომები და მიიღეთ ფასი მყისიერად</p>
+        
+        <div class="form-group">
+            <label>ფანჯრის ან კარნიზის სიგანე (მეტრებში):</label>
+            <input type="number" id="width" value="2" step="0.5" min="0.5">
+        </div>
+        <div class="form-group">
+            <label>სიმაღლე (მეტრებში):</label>
+            <input type="number" id="height" value="2.7" step="0.1" min="1">
+        </div>
+        <div class="form-group">
+            <label>ქსოვილის ტიპი:</label>
+            <select id="fabricType">
+                <option value="35">სტანდარტული დღის ფარდა (ტული) — 35 ₾ / მ²</option>
+                <option value="60" selected>პრემიუმ ღამის ფარდა (Blackout) — 60 ₾ / მ²</option>
+                <option value="80">ლუქს ხავერდი — 80 ₾ / მ²</option>
+            </select>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="includeRod" style="width: 18px; height: 18px;">
+            <label for="includeRod" style="margin:0; cursor:pointer;">კარნიზის დამატება (+40 ლარი მეტრზე)</label>
+        </div>
+        
+        <button class="calc-btn" onclick="calculatePrice()">ფასის გამოთვლა</button>
+
+        <div id="resultBox" class="result-box">
+            <p style="font-size: 13px; color: #581c87; font-weight: 600;">სავარაუდო ღირებულება:</p>
+            <h3 id="totalPrice">0 ₾</h3>
+            <p style="font-size: 11px; color: #64748b; margin-top: 8px;">* ზუსტი ფასისთვის დაგვიკავშირდით თელავში.</p>
+        </div>
+    </div>
+
+    <section class="section">
+        <h2>ჩვენი პროდუქცია</h2>
+        <div class="grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80" alt="Blackout">
+                <div class="card-content">
+                    <h3>ღამის ფარდები (Blackout)</h3>
+                    <p>სინათლის სრული ბლოკირება და მაქსიმალური კომფორტი თქვენი საძინებლისთვის.</p>
+                </div>
             </div>
-            <nav class="hidden md:flex space-x-6 text-sm font-medium">
-                <a href="#home" class="hover:text-purple-700 transition">მთავარი</a>
-                <a href="#calculator" class="hover:text-purple-700 transition">ფასის კალკულატორი</a>
-                <a href="#catalog"
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&w=600&q=80" alt="Tulle">
+                <div class="card-content">
+                    <h3>დღის ფარდები & ტული</h3>
+                    <p>ჰაეროვანი, მსუბუქი ქსოვილები ბუნებრივი განათების შესანარჩუნებლად.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80" alt="Rods">
+                <div class="card-content">
+                    <h3>კარნიზები & აქსესუარები</h3>
+                    <p>მტკიცე კარნიზები, სამაგრები და დეტალები სრული ჰარმონიისთვის.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact">
+        <h2>დაგვიკავშირდით თელავში</h2>
+        <p>მისამართი: თელავი, საქართველო</p>
+        <a href="tel:+995577537017" class="phone-link">📞 +995 500 00 00 00</a>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 თამუნა მამუკელაშვილის ფარდები (თელავი). ყველა უფლება დაცულია.</p>
+    </footer>
+
+    <script>
+        function calculatePrice() {
+            let width = parseFloat(document.getElementById('width').value) || 0;
+            let height = parseFloat(document.getElementById('height').value) || 0;
+            let fabricPricePerSqm = parseFloat(document.getElementById('fabricType').value) || 0;
+            let includeRod = document.getElementById('includeRod').checked;
+
+            let area = width * height * 1.5;
+            let fabricTotal = area * fabricPricePerSqm;
+            let rodTotal = includeRod ? (width * 40) : 0;
+            let total = Math.round(fabricTotal + rodTotal);
+
+            document.getElementById('totalPrice').innerText = total + " ₾";
+            document.getElementById('resultBox').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
