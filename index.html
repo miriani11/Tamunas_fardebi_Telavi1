@@ -25,4 +25,40 @@
             <nav class="hidden md:flex space-x-6 text-sm font-medium">
                 <a href="#home" class="hover:text-purple-700 transition">მთავარი</a>
                 <a href="#calculator" class="hover:text-purple-700 transition">ფასის კალკულატორი</a>
-                <a href="#catalog"
+                <a href="#catalog"    <!-- Contact Section -->
+    <section id="contact" class="bg-purple-900 text-white py-12 px-4 text-center">
+        <div class="max-w-xl mx-auto">
+            <h2 class="text-2xl font-bold mb-4">დაგვიკავშირდით</h2>
+            <p class="text-purple-200 mb-6">მისამართი: თელავი, საქართველო</p>
+            <p class="text-xl font-semibold mb-6">📞 ტელეფონი: <a href="tel:+995500000000" class="underline text-amber-400">+995 500 00 00 00</a></p>
+            <a href="tel:+995500000000" class="inline-block bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-8 py-3 rounded-lg shadow transition">
+                დაგვირეკეთ ახლავე
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-400 text-center py-6 text-sm">
+        <p>&copy; 2026 თამუნა მამუკელაშვილის ფარდები (თელავი). ყველა უფლება დაცულია.</p>
+    </footer>
+
+    <!-- JavaScript for Calculator -->
+    <script>
+        function calculatePrice() {
+            let width = parseFloat(document.getElementById('width').value) || 0;
+            let height = parseFloat(document.getElementById('height').value) || 0;
+            let fabricPricePerSqm = parseFloat(document.getElementById('fabricType').value) || 0;
+            let includeRod = document.getElementById('includeRod').checked;
+
+            let area = width * height * 1.5;
+            let fabricTotal = area * fabricPricePerSqm;
+            let rodTotal = includeRod ? (width * 40) : 0;
+            let total = Math.round(fabricTotal + rodTotal);
+
+            document.getElementById('totalPrice').innerText = total + " ₾";
+            document.getElementById('resultBox').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
+
