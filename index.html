@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Jump Hero - ვერტიკალური არკადა</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #111827;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 750px;
+      background: linear-gradient(to bottom, #0f172a, #1e1b4b);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .hud {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      font-weight: bold;
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .btn {
+      margin-top: 20px;
+      padding: 14px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      background: #6366f1;
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      cursor: pointer;
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <canvas id="canvas"></canvas>
+
+  <div class="hud">
+    <div id="scoreText">ქულა: 0</div>
+    <div id="highScoreText">რეკორდი: 0</div>
+  </div>
+
+  <div id="startMenu" class="overlay">
+    <h1 style="font-size: 32px; margin-bottom: 10px;">🚀 Jump Hero</h1>
+    <p style="color: #94a3b8; font-size: 14px; max-width: 280px;">
+      მართვა: ეკრანის მარცხენა ან მარჯვენა მხარეს თითის დაჭერით.
+    </p>
+    <button class="btn" onclick="startGame()">დაწყება</button>
+  </div>
+
+  <div id="gameOverMenu" class="overlay hidden">
+    <h2 style="font-size: 28px; color: #ef4444; margin-bottom: 10px;">თამაში დასრულდა!</h2>
+    <p id="finalScore" style="font-size: 20px; margin-bottom: 5px;">ქულა: 0</p>
+    <p id="bestScore" style="color: #fbbf24; font-size: 16px;">საუკეთესო: 0</p>
+    <button class="btn" onclick="startGame()">თავიდან ცდა</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let width, height;
+function resize() {
+  const container = document.getElementById('game-container');
+  width = container.clientWidth;
+  height = container.clientHeight;
+  canvas.width = width;
+  canvas.height = height;
+}
+resize();
+window.addEventListener('resize', resize);
+
+let player, platforms, coins, score, highScore, gameOver, isPlaying;
+let touchLeft = false, touchRight = false;
+
+highScore = localStorage.getItem('jh_highscore') || 0;
+document.getElementById('highScoreText').innerText = `რეკორდი: ${highScore}`;
+
+class Player {
+  constructor() {
+    this.w = 30;
+    this.h = 30;
+    this.x = width / 2 - this.w / 2;
+    this.y = height - 150;
+    this.vx = 0;
+    this.vy = -12;
+    this.gravity = 0.45;
+  }
+  update() {
+    if (touchLeft) this.vx = -6;
+    else if (touchRight) this.vx = 6;
+    else this.vx *= 0.8;
+
+    this.x += this.vx;
+    this.vy += this.gravity;
+    this.y += this.vy;
+
+    if (this.x < -this.w) this.x = width;
+    if (this.x > width) this.x = -this.w;
+  }
+  draw() {
+    ctx.fillStyle = '#6366f1';
+    ctx.beginPath();
+    ctx.arc(this.x + this.w/2, this.y + this.h/2, this.w/2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(this.x + this.w/2 + (this.vx > 0 ? 4 : -4), this.y + 10, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+class Platform {
+  constructor(y, type = 'normal') {
+    this.w = 75;
+    this.h = 12;
+    this.x = Math.random() * (width - this.w);
+    this.y = y;
+    this.type = type; // normal, moving, broken
+    this.vx = (type === 'moving') ? (Math.random() > 0.5 ? 2 : -2) : 0;
+    this.broken = false;
+  }
+  update() {
+    if (this.type === 'moving') {
+      this.x += this.vx;
+      if (this.x <= 0 || this.x + this.w >= width) this.vx *= -1;
+    }
+  }
+  draw() {
+    if (this.broken) return;
+    if (this.type === 'normal') ctx.fillStyle = '#22c55e';
+    else if (this.type === 'moving') ctx.fillStyle = '#3b82f6';
+    else if (this.type === 'broken') ctx.fillStyle = '#f97316';
+
+    ctx.fillRect(this.x, this.y, this.w, this.h);
+  }
+}
+
+class Coin {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.r = 8;
+    this.collected = false;
+  }
+  draw() {
+    if (this.collected) return;
+    ctx.fillStyle = '#eab308';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function initGame() {
+  player = new Player();
+  platforms = [new Platform(height - 50, 'normal')];
+  coins = [];
+  score = 0;
+  gameOver = false;
+  
+  for (let y = height - 120; y > 0; y -= 70) {
+    let type = 'normal';
+    const rand = Math.random();
+    if (rand > 0.75) type = 'moving';
+    else if (rand > 0.6) type = 'broken';
+    
+    let p = new Platform(y, type);
+    platforms.push(p);
+    
+    if (Math.random() > 0.6 && type !== 'broken') {
+      coins.push(new Coin(p.x + p.w / 2, p.y - 15));
+    }
+  }
+}
+
+function startGame() {
+  initGame();
+  isPlaying = true;
+  document.getElementById('startMenu').classList.add('hidden');
+  document.getElementById('gameOverMenu').classList.add('hidden');
+  requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+  if (!isPlaying) return;
+
+  ctx.clearRect(0, 0, width, height);
+
+  player.update();
+
+  if (player.y < height / 2) {
+    let diff = height / 2 - player.y;
+    player.y = height / 2;
+    score += Math.floor(diff);
+    document.getElementById('scoreText').innerText = `ქულა: ${score}`;
+
+    platforms.forEach(p => p.y += diff);
+    coins.forEach(c => c.y += diff);
+
+    if (platforms[platforms.length - 1].y > 70) {
+      let type = 'normal';
+      const rand = Math.random();
+      if (rand > 0.7) type = 'moving';
+      else if (rand > 0.55) type = 'broken';
+      
+      let p = new Platform(0, type);
+      platforms.push(p);
+      if (Math.random() > 0.6 && type !== 'broken') {
+        coins.push(new Coin(p.x + p.w / 2, p.y - 15));
+      }
+    }
+  }
+
+  platforms = platforms.filter(p => p.y < height);
+  coins = coins.filter(c => c.y < height && !c.collected);
+
+  platforms.forEach(p => {
+    p.update();
+    p.draw();
+
+    if (
+      player.vy > 0 &&
+      player.x + player.w > p.x &&
+      player.x < p.x + p.w &&
+      player.y + player.h >= p.y &&
+      player.y + player.h <= p.y + 15
+    ) {
+      if (p.type === 'broken') {
+        p.broken = true;
+      } else {
+        player.vy = -11;
+      }
+    }
+  });
+
+  coins.forEach(c => {
+    c.draw();
+    let dist = Math.hypot((player.x + player.w/2) - c.x, (player.y + player.h/2) - c.y);
+    if (dist < player.w/2 + c.r && !c.collected) {
+      c.collected = true;
+      score += 100;
+      document.getElementById('scoreText').innerText = `ქულა: ${score}`;
+    }
+  });
+
+  player.draw();
+
+  if (player.y > height) {
+    endGame();
+    return;
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+function endGame() {
+  isPlaying = false;
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('jh_highscore', highScore);
+    document.getElementById('highScoreText').innerText = `რეკორდი: ${highScore}`;
+  }
+  document.getElementById('finalScore').innerText = `ქულა: ${score}`;
+  document.getElementById('bestScore').innerText = `საუკეთესო: ${highScore}`;
+  document.getElementById('gameOverMenu').classList.remove('hidden');
+}
+
+// მობილურის ეკრანზე შეხება
+window.addEventListener('touchstart', (e) => {
+  const touchX = e.touches[0].clientX;
+  if (touchX < window.innerWidth / 2) {
+    touchLeft = true;
+    touchRight = false;
+  } else {
+    touchRight = true;
+    touchLeft = false;
+  }
+});
+
+window.addEventListener('touchend', () => {
+  touchLeft = false;
+  touchRight = false;
+});
+
+// კლავიატურა (კომპიუტერისთვის)
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'a') touchLeft = true;
+  if (e.key === 'ArrowRight' || e.key === 'd') touchRight = false;
+});
+window.addEventListener('keyup', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'a') touchLeft = false;
+  if (e.key === 'ArrowRight' || e.key === 'd') touchRight = false;
+});
+</script>
+</body>
+</html>
